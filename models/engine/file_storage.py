@@ -1,23 +1,21 @@
 #!/usr/bin/python3
 """
-This module implements the storage funcitonality of the AirBnB project.
+Contains the FileStorage class model
 """
-from json import dump
-from json import load
-from os.path import exists
-import sys
+import json
+
 from models.base_model import BaseModel
 from models.user import User
+from models.state import State
 from models.amenity import Amenity
 from models.city import City
 from models.place import Place
 from models.review import Review
-from models.state import State
 
 
 class FileStorage:
     """
-    This class serializes instances to a JSON file and
+    serializes instances to a JSON file and
     deserializes JSON file to instances
     """
 
@@ -28,35 +26,32 @@ class FileStorage:
         """
         Returns the dictionary __objects
         """
-        return FileStorage.__objects
+        return self.__objects
 
     def new(self, obj):
         """
-        Sets in __objects the obj with key
+        sets in __objects the `obj` with key <obj class name>.id
         """
-        name = type(obj).__name__
-        key = name + "." + obj.id
-        FileStorage.__objects[key] = obj
+        self.__objects["{}.{}".format(obj.__class__.__name__, obj.id)] = obj
 
     def save(self):
         """
-        Serializes __objects to the JSON file
+        Serialize __objects to the JSON file
         """
-        dict_object = {
-                obj: FileStorage.__objects[obj].
-                to_dict() for obj in FileStorage.__objects.keys()
-                }
-        with open(FileStorage.__file_path, "w", encoding="utf8") as fs:
-            dump(dict_object, fs)
+        with open(self.__file_path, mode="w") as f:
+            dict_storage = {}
+            for k, v in self.__objects.items():
+                dict_storage[k] = v.to_dict()
+            json.dump(dict_storage, f)
 
     def reload(self):
         """
         Deserializes the JSON file to __objects
+        -> Only IF it exists!
         """
-        if exists(FileStorage.__file_path):
-            with open(FileStorage.__file_path) as fs:
-                dict_object = load(fs)
-                for obj in dict_object.values():
-                    name = obj["__class__"]
-                    del obj["__class__"]
-                    self.new(eval(name)(**obj))
+        try:
+            with open(self.__file_path, encoding="utf-8") as f:
+                for obj in json.load(f).values():
+                    self.new(eval(obj["__class__"])(**obj))
+        except FileNotFoundError:
+            return
