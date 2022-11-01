@@ -13,6 +13,7 @@ from models.place import Place
 from models.review import Review
 from models import storage
 
+
 class HBNBCommand(cmd.Cmd):
     """Definition of the custom shell command interpreter
     Attributes:
@@ -35,10 +36,12 @@ class HBNBCommand(cmd.Cmd):
         do_all()
         do_update()
     """
+
     prompt = "(hbnb) "
     __class_list = {'BaseModel': BaseModel, 'User': User, 'State': State,
                     'City': City, 'Amenity': Amenity, 'Place': Place,
                     'Review': Review}
+
 #    time_pat = re.compile(
 #                r'^\d{4}(\-\d{2}){2}T(\d{2}:){2}\d{2}(\.\d{6})?$')
 #    uuid_pat = re.compile(
@@ -50,6 +53,7 @@ class HBNBCommand(cmd.Cmd):
     err_msg4 = "** no instance found **"
     err_msg5 = "** attribute name missing **"
     err_msg6 = "** value missing **"
+
     def do_create(self, line):
         """Command create : Creates a new object given its class
         and prints its id
@@ -66,6 +70,7 @@ class HBNBCommand(cmd.Cmd):
                 print(obj.id)
                 return
         print(self.err_msg2)
+
     def do_show(self, line):
         """Command show : prints the string representation of an object
         Usage : $ show <class name> <id> or $ <class name>.show("<id>")
@@ -76,6 +81,7 @@ class HBNBCommand(cmd.Cmd):
         if (key_obj is None):
             return
         print(key_obj[1])
+
     def do_destroy(self, line):
         """Command destroy : deletes an object given its class name and id
         Usage : $ destroy <class name> <id> or $ <class name>.destroy("<id>")
@@ -87,7 +93,7 @@ class HBNBCommand(cmd.Cmd):
             return
         del(storage.all()[key_obj[0]])
         storage.save()
-        
+
     def do_all(self, line):
         """Command all : prints all objects string representaion
         Usage : $ all [<class name>] or $ <class name>.all()
@@ -115,7 +121,7 @@ class HBNBCommand(cmd.Cmd):
             print(']')
             return
         print(self.err_msg2)
-        
+
     def do_update(self, line):
         """Command update : updates an object given its class name,id,
         attribute and new value
@@ -154,7 +160,7 @@ class HBNBCommand(cmd.Cmd):
             new_arg = elag_str(args[3])
             obj.__setattr__(args[2], cast(new_arg))
             storage.save()
-            
+
     def do_count(self, line):
         """Command count : counts number of object of a given class
         Usage : $ <class name>.count() or count <class name>
@@ -174,23 +180,23 @@ class HBNBCommand(cmd.Cmd):
                 print(i)
                 return
         print(self.err_msg2)
-        
+
     def do_quit(self, line):
         """Command quit : exits the console
         """
         return (True)
-    
+
     def do_EOF(self, line):
         """Command EOF : exits the console when "CTRL-D"
         """
         print()
         return (True)
-    
+
     def emptyline(self):
         """does nothing when an empty line is entered
         """
         return
-    
+
     def console_error_checker(self, line):
         """checks line for error input error
         Args:
@@ -216,7 +222,7 @@ class HBNBCommand(cmd.Cmd):
                 print(self.err_msg4)
                 return
         print(self.err_msg2)
-        
+
     def precmd(self, line):
         """modify the line before command execution
         """
@@ -255,7 +261,8 @@ class HBNBCommand(cmd.Cmd):
         elif (line[-2:] == "()"):
             line = args[1][:-2] + " " + args[0]
         return (line)
-    
+
+
 def elag_str(arg):
     """Transforms string with quote into string without quote
     Args:
@@ -267,6 +274,7 @@ def elag_str(arg):
     arg = arg.strip('"')
     arg = arg.strip("'")
     return (arg)
+
 
 def parse_str(args):
     """Transforms string attribute with space into one string
@@ -281,6 +289,7 @@ def parse_str(args):
         return (args[3])
     except IndexError:
         print("string value must be quoted")
-        
+
+
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
